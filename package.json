@@ -1,0 +1,33 @@
+
+
+{
+  "name": "fastspeedchecker-backend",
+  "version": "1.0.0",
+  "description": "High performance LibreSpeed backend for FastSpeedChecker",
+  "private": true,
+  "main": "cluster.js",
+  "type": "commonjs",
+  "scripts": {
+	 "start": "node server.js",
+    "dev": "node server.js",
+    "start1": "node cluster.js",
+    "prod": "pm2 start cluster.js -i max --name fastspeed-backend",
+    "stop": "pm2 stop fastspeed-backend",
+    "restart": "pm2 restart fastspeed-backend",
+    "logs": "pm2 logs fastspeed-backend"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "pm2": "^6.0.14"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
