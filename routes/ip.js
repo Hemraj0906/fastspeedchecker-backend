@@ -71,8 +71,66 @@
 
 
 
+// const express = require("express");
+// const router = express.Router();
+
+// router.get("/", async (req, res) => {
+//   try {
+//     let ip =
+//       req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+//       req.ip ||
+//       req.socket.remoteAddress ||
+//       null;
+
+//     if (ip?.startsWith("::ffff:")) {
+//       ip = ip.replace("::ffff:", "");
+//     }
+
+//     if (!ip) {
+//       return res.status(400).json({ error: "IP not detected" });
+//     }
+
+//     // Local dev case
+//     if (ip === "127.0.0.1" || ip === "::1") {
+//       return res.json({
+//         ip: "127.0.0.1",
+//         isp: "Local Network",
+//         city: "Localhost",
+//         region: "Local",
+//         country: "Local",
+        
+//       });
+//     }
+
+//     const response = await fetch(`http://ip-api.com/json/${ip}`);
+//     const data = await response.json();
+
+//     return res.json({
+//       ip: data.query,
+//       isp: data.isp,
+//       org: data.org,
+//       city: data.city,
+//       region: data.regionName,
+//       country: data.country,
+      
+//     });
+//   } catch (err) {
+//     console.error("IP Error:", err);
+//     return res.status(500).json({
+//       ip: "N/A",
+//       isp: "Unknown ISP",
+//     });
+//   }
+// });
+
+// module.exports = router;
+
+
 const express = require("express");
 const router = express.Router();
+
+// If using Node < 18, uncomment next line:
+// const fetch = (...args) => import("node-fetch").then(({default: fetch}) => fetch(...args));
 
 router.get("/", async (req, res) => {
   try {
@@ -82,6 +140,7 @@ router.get("/", async (req, res) => {
       req.socket.remoteAddress ||
       null;
 
+    // Remove IPv6 prefix
     if (ip?.startsWith("::ffff:")) {
       ip = ip.replace("::ffff:", "");
     }
@@ -90,19 +149,35 @@ router.get("/", async (req, res) => {
       return res.status(400).json({ error: "IP not detected" });
     }
 
-    // Local dev case
+    // ✅ Local development case
     if (ip === "127.0.0.1" || ip === "::1") {
       return res.json({
         ip: "127.0.0.1",
         isp: "Local Network",
+        org: "Local Org",
         city: "Localhost",
         region: "Local",
-        country: "Local",
+        country: "India",
+        countryCode: "IN",
+        server: "Optimised Speed Engine",
       });
     }
 
+    // 🌍 Fetch real IP data
     const response = await fetch(`http://ip-api.com/json/${ip}`);
     const data = await response.json();
+
+    if (data.status !== "success") {
+      return res.status(500).json({
+        ip: ip,
+        isp: "Unknown ISP",
+        city: "",
+        region: "",
+        country: "",
+        countryCode: "",
+        server: "Optimised Speed Engine",
+      });
+    }
 
     return res.json({
       ip: data.query,
@@ -111,12 +186,19 @@ router.get("/", async (req, res) => {
       city: data.city,
       region: data.regionName,
       country: data.country,
+      countryCode: data.countryCode,
+      server: "Optimised Speed Engine",
     });
   } catch (err) {
     console.error("IP Error:", err);
     return res.status(500).json({
       ip: "N/A",
       isp: "Unknown ISP",
+      city: "",
+      region: "",
+      country: "",
+      countryCode: "",
+      server: "Optimised Speed Engine",
     });
   }
 });
