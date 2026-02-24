@@ -1,5 +1,3 @@
-
-
 {
   "name": "fastspeedchecker-backend",
   "version": "1.0.0",
@@ -8,7 +6,7 @@
   "main": "cluster.js",
   "type": "commonjs",
   "scripts": {
-	 "start": "node server.js",
+    "start": "node server.js",
     "dev": "node server.js",
     "start1": "node cluster.js",
     "prod": "pm2 start cluster.js -i max --name fastspeed-backend",
@@ -17,6 +15,7 @@
     "logs": "pm2 logs fastspeed-backend"
   },
   "dependencies": {
+    "body-parser": "^2.2.2",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

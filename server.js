@@ -82,7 +82,9 @@ const app = express();
 // ==========================================
 // Render / VPS / Cloud use reverse proxy
 // Without this, real client IP detect nahi hota
-app.set("trust proxy", 1);
+
+//app.set("trust proxy", 1);
+app.set("trust proxy", true);
 
 
 
