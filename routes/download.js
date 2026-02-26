@@ -1,49 +1,31 @@
 const express = require("express");
 const router = express.Router();
 
-// router.get("/", (req, res) => {
-//   res.setHeader("Content-Type", "application/octet-stream");
-//     res.setHeader("Cache-Control", "no-store");
-//     res.setHeader("Connection", "keep-alive");
-
-//   const totalSize = 200 * 1024 * 1024; // 200MB virtual stream
-//   const chunkSize = 1024 * 1024; // 1MB chunk
-
-//   let sent = 0;
-//   const chunk = Buffer.alloc(chunkSize);
-
-//   function send() {
-//     while (sent < totalSize) {
-//       if (!res.write(chunk)) {
-//         res.once("drain", send);
-//         return;
-//       }
-//       sent += chunkSize;
-//     }
-//     res.end();
-//   }
-
-//   send();
-// });
-
 router.get("/", (req, res) => {
   res.setHeader("Content-Type", "application/octet-stream");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Connection", "keep-alive");
 
-  const chunk = Buffer.alloc(1024 * 1024); // 1MB
+  // Limit to 50MB max (prevents infinite streaming)
+  const MAX_SIZE = 50 * 1024 * 1024;
+  const chunkSize = 1024 * 1024; // 1MB chunks
+  const chunk = Buffer.alloc(chunkSize);
+
+  let sent = 0;
   let active = true;
 
+  // Clean up on client disconnect
   req.on("close", () => {
     active = false;
   });
 
   function send() {
-    while (active) {
+    while (active && sent < MAX_SIZE) {
       if (!res.write(chunk)) {
         res.once("drain", send);
         return;
       }
+      sent += chunkSize;
     }
     res.end();
   }

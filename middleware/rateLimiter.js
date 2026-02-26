@@ -1,26 +1,11 @@
-// const rateLimit = require("express-rate-limit");
-
-// module.exports = rateLimit({
-//   windowMs: 60 * 1000,
-//   max: 200,
-//   standardHeaders: true,
-//   legacyHeaders: false,
-// });
-
 const rateLimit = require("express-rate-limit");
 
-// Use official IPv6-safe key generator
-const { ipKeyGenerator } = rateLimit;
-
+// Simple rate limiter without custom options that might cause validation issues
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 150,
+  max: 1000, // Allow many requests per minute for speed testing
   standardHeaders: true,
   legacyHeaders: false,
-
-  // ✅ Official safe IP generator (IPv4 + IPv6 safe)
-  keyGenerator: (req, res) => ipKeyGenerator(req),
-
   message: {
     error: "Too many requests. Please slow down.",
   },
